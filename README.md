@@ -5,7 +5,7 @@ Pierwsze podejście do stworzenia własnego projektu związanego z analizą dany
 ProjectCovid odnosi się do danych pobranych ze strony: 
 https://ourworldindata.org/covid-deaths
 
-Zbiór danych zawiera informacje odnośnie liczby zakażeń, zgonów, szczepionek itp z podziałem na kraje i kontynenty. Dane te mają zakres dat od stycznia 2020 roku do października 2021. 
+Zbiór danych zawiera informacje odnośnie liczby zakażeń, zgonów, szczepionek itp z podziałem na kraje i kontynenty. Dane te mają zakres od stycznia 2020 roku do października 2021. 
 
 Analiza danych jest wzorowana na filmie youtubera AlexTheAnalyst:
 
