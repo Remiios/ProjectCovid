@@ -248,16 +248,15 @@ ON
 WHERE
 	dea.continent is not null;
 
-
-
 -- Usuwanie widoku 
 -- DROP VIEW PercentPopulationVaccinated
 
 
-
 -- Wyswietlenie danych z stworzonego widoku
-
 SELECT *
 FROM PercentPopulationVaccinated
 ORDER BY 
 	location, date;
+	
+	
+-- Kolejne agregacje wkrótce
