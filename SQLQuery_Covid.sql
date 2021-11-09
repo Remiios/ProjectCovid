@@ -1,12 +1,12 @@
 
--- Wyswietlenie tabel CovidDeaths oraz CovidVaccinations
+-- Wyświetlenie tabel CovidDeaths oraz CovidVaccinations
 
 
--- continent ma wartosc NULL gdy w location znajduja sie nazwy kontynentów wraz z danymi dotyczacymi wirusa covid w kolejnych dniach
+-- continent ma wartość NULL gdy w location znajdują się nazwy kontynentów wraz z danymi dotyczącymi wirusa covid w kolejnych dniach
 
 SELECT *
 FROM PortfolioProject..CovidDeaths
-WHERE continent is not null				-- Wyswietl bez danych NULL w continent
+WHERE continent is not null				-- Wyświetl bez danych NULL w continent
 ORDER BY 3,4;							-- Segregowanie po kolumnach lokacja i data
 
 
@@ -18,7 +18,7 @@ ORDER BY 3,4;
 
 
 
--- Wybor kolumn i segregowanie po lokacji i dacie
+-- Wybór kolumn i segregowanie po lokacji i dacie
 
 SELECT location, 
 	date, 
@@ -31,7 +31,7 @@ ORDER BY location, date;
 
 
 
--- Procent zgonow z powodu wirusa do ilosci zakazonych w danym dniu
+-- Procent zgonów z powodu wirusa do ilości zakażonych w danym dniu
 
 SELECT location, 
 	date, 
@@ -39,24 +39,26 @@ SELECT location,
 	total_deaths, 
 	(total_deaths / total_cases)*100 AS DeathPercentage
 FROM PortfolioProject..CovidDeaths
--- WHERE location like '%Poland%' - Opcjonalna klauzura, która wska¿e dane gdzie w kolumnie lokacja jest s³owo zawieraj¹ce ci¹g znaków "Poland"
+--WHERE location like '%Poland%' -- Opcjonalna klauzura, która wskaże dane gdzie w kolumnie lokacja jest słowo zawierające ciąg znaków "Poland"
 ORDER BY location, date;
 
 
 
--- Procent zgonow do populacji danego kraju w danym dniu
+-- Procent zgonów do populacji danego kraju w danym dniu
 
 SELECT location, 
 	date, 
-	population, 
+	population,
+--	total_cases,
 	total_deaths, 
 	(total_deaths / population)*100 AS DeathPercentage
 FROM PortfolioProject..CovidDeaths
+--WHERE date = '2021-10-01'
 ORDER BY location, date;
 
 
 
--- Procent liczby zakazonych osób do calej populacji danego kraju 
+-- Procent liczby zakażonych osób do całej populacji danego kraju 
 
 SELECT location, 
 	date, 
@@ -68,7 +70,7 @@ ORDER BY location, date;
 
 
 
--- Kraje z najwyzszym procentem osób zakazonych do liczby ludnosci 
+-- Kraje z najwyższym procentem osób zakażonych do liczby ludności 
 
 SELECT location, 
 	population, 
@@ -81,7 +83,7 @@ ORDER BY PercentPopulationInfected desc;
 
 
 
--- Kraje z najwyzsza liczba zgonów spowodowanych wirusem
+-- Kraje z najwyższą liczbą zgonów spowodowanych wirusem
 
 SELECT location, 
 	MAX(cast(total_deaths AS int)) AS TotalDeathsCount					-- zmiana nvarchar na int
@@ -92,7 +94,7 @@ ORDER BY TotalDeathsCount desc;
 
 
 
--- Kontynenty z liczba zgonów spowodowanych wirusem
+-- Kontynenty z liczbą zgonów spowodowanych wirusem
 
 SELECT continent, 
 	MAX(cast(total_deaths AS int)) AS TotalDeathsCount
@@ -103,8 +105,8 @@ ORDER BY TotalDeathsCount desc;
 
 
 
--- Globalne wartosci z podzialem na dni 
--- Liczba zakazen, zgonow z kazdego dnia na swiecie oraz procent zgonów na liczbe zakazonych
+-- Globalne wartości z podziałem na dni 
+-- Liczba zakażeń, zgonów z każdego dnia na świecie oraz procent zgonów na liczbę zakażonych
 
 SELECT date, 
 	SUM(new_cases) AS CountCases, 
@@ -121,7 +123,7 @@ ORDER BY
 
 
 
--- Populacja danego kraju wraz z liczba osób zaszczepionych z podzialem na dni
+-- Populacja danego kraju wraz z liczbą osób zaszczepionych z podziałem na dni
 
 SELECT dea.continent, 
 	dea.location, 
@@ -133,7 +135,7 @@ FROM
 JOIN
 	PortfolioProject..CovidVaccinations vac
 ON
-	dea.location = vac.location and dea.date = vac.date				-- laczenie tabel po kolumnach lokacja oraz data
+	dea.location = vac.location and dea.date = vac.date				-- łączenie tabel po kolumnach lokacja oraz data
 WHERE
 	dea.continent is not null
 ORDER BY 
@@ -141,7 +143,7 @@ ORDER BY
 
 
 
--- Wzrastajaca z kolejnymi dniami liczba zaszczepionych z podzialem na kraje, kontynenty 
+-- Wzrastająca z kolejnymi dniami liczba zaszczepionych z podziałem na kraje, kontynenty 
 
 SELECT dea.continent, 
 	dea.location, 
@@ -149,7 +151,7 @@ SELECT dea.continent,
 	dea.population, 
 	vac.new_vaccinations, 
 	SUM(CONVERT(bigint, vac.new_vaccinations)) OVER (Partition by dea.location ORDER BY dea.location, CONVERT(datetime, dea.date)) AS RollingPeopleVaccinated
--- sumowanie liczby zaszczepionych osob kazdego dnia z sortowaniem na kraje oraz date
+-- sumowanie liczby zaszczepionych osób każdego dnia z sortowaniem na kraje oraz datę
 FROM 
 	PortfolioProject..CovidDeaths dea
 JOIN
@@ -163,9 +165,9 @@ ORDER BY
 
 
 
--- uzycie CTE (common table expression - wspolne wyrazenie tablicowe) aby obliczyc procent z stworzonej nowej zmiennej
--- klauzura WITH dziala podobnie jak prefix SELECT
--- Sumowanie liczby zaszczepionych oraz procent osob zaszczepionych (do danego dnia) w porownaniu do calkowitej populacji kraju
+-- użycie CTE (common table expression - wspólne wyrażenie tablicowe) aby obliczyć procent z stworzonej nowej zmiennej
+-- klauzura WITH działa podobnie jak prefix SELECT
+-- Sumowanie liczby zaszczepionych oraz procent osób zaszczepionych (do danego dnia) w porównaniu do całkowitej populacji kraju
 
 WITH PopVsVac (continent, location, date, population, new_vaccinations, RollingPeopleVaccinated)		-- kolumny takie same jak w klauzuli SELECT
 AS
@@ -186,7 +188,7 @@ WHERE
 	dea.continent is not null
 -- ORDER BY 
 -- dea.location, dea.date;
--- Klauzura WITH nie obsluguje ORDER BY
+-- Klauzura WITH nie obsługuje ORDER BY
 )
 SELECT *, 
 	(RollingPeopleVaccinated/population)*100 AS PercentageVaccinatedPeople
@@ -198,7 +200,7 @@ ORDER BY
 
 -- Tworzenie tabeli tymczasowej - Temporary Table
 
-DROP TABLE IF exists #PercentPopulationVaccinated				-- Zabezpieczenie przed bledem 
+DROP TABLE IF exists #PercentPopulationVaccinated			-- Zabezpieczenie przed błędem 
 Create Table #PercentPopulationVaccinated					-- Tworzenie tabeli tymczasowej z podanymi kolumnami i typami danych
 (
 Continent nvarchar(255),
@@ -230,7 +232,7 @@ FROM #PercentPopulationVaccinated;
 
 
 
--- Tworzenie widoku danych do pozniejszych dzialan
+-- Tworzenie widoku danych do późniejszych działań 
 
 CREATE VIEW PercentPopulationVaccinated AS
 SELECT dea.continent, 
@@ -248,15 +250,61 @@ ON
 WHERE
 	dea.continent is not null;
 
+
+
 -- Usuwanie widoku 
 -- DROP VIEW PercentPopulationVaccinated
 
 
--- Wyswietlenie danych z stworzonego widoku
+
+-- Wyświetlenie danych z stworzonego widoku
+
 SELECT *
 FROM PercentPopulationVaccinated
 ORDER BY 
 	location, date;
-	
+
+
+
+-- średnia wieku populacji krajów oraz średnia długości życia od największej
+
+SELECT vac.continent,
+	vac.location,
+	median_age,
+	life_expectancy
+FROM
+	PortfolioProject..CovidDeaths dea
+JOIN
+	PortfolioProject..CovidVaccinations vac
+ON
+	dea.location = vac.location and dea.date = vac.date
+WHERE
+	dea.continent is not null
+GROUP BY 
+	vac.continent, vac.location, median_age, life_expectancy
+ORDER BY 
+	life_expectancy DESC;
+
+
+
+
+-- Kraje w Europie z zagęszczeniem ludności oraz całkowitą liczbą przypadków na dzień 1 czerwca 2021
+
+SELECT dea.continent,
+	vac.location,
+	vac.date,
+	population_density,
+	dea.total_cases
+FROM
+	PortfolioProject..CovidDeaths dea
+JOIN
+	PortfolioProject..CovidVaccinations vac
+ON
+	dea.location = vac.location and dea.date = vac.date
+WHERE
+	dea.continent is not null AND dea.continent = 'Europe' AND vac.date = '2021-06-01'
+ORDER BY 
+	vac.location ASC;
+
 	
 -- Kolejne agregacje wkrótce
